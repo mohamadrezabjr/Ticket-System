@@ -1,3 +1,91 @@
 from django.db import models
+from django.contrib.auth import get_user_model
 
-# Create your models here.
+User = get_user_model()
+
+class TicketCategory(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = 'Ticket Categories'
+
+    def __str__(self):
+        return self.name
+
+class Ticket(models.Model):
+    class AdminStatus(models.TextChoices):
+        NEW = 'N', 'جدید'
+        ANSWERED = 'A', 'پاسخ داده شده'
+        SEEN = 'S', 'دیده شده'
+        CLOSED = 'C', 'بسته شده'
+
+    class UserStatus(models.TextChoices):
+        PENDING = 'P', 'در انتظار پاسخ'
+        ANSWERED = 'A', 'پاسخ داده شده'
+        CLOSED = 'C', 'بسته شده'
+
+    title = models.CharField(max_length=100,)
+    description = models.TextField(null=True, blank=True)
+    category = models.ForeignKey(
+        TicketCategory,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name = 'tickets',
+    )
+    user_status = models.CharField(
+        choices=UserStatus.choices,
+        max_length=10,
+        blank = True,
+        null = True,
+        default = UserStatus.PENDING
+    )
+    admin_status = models.CharField(
+        choices=AdminStatus.choices ,
+        max_length=10,
+        blank = True,
+        null = True,
+        default = AdminStatus.NEW
+    )
+    client = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name = 'tickets',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return f"{self.title} - {self.client}"
+
+
+def message_upload_path(instance, filename):
+    return f'messages/ticket_{instance.ticket.id}/{filename}'
+
+class Message(models.Model):
+    ticket = models.ForeignKey(
+        Ticket,
+        on_delete=models.CASCADE,
+        related_name = 'messages'
+    )
+    sender = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='messages'
+    )
+    body = models.TextField(null=True, blank=True)
+    file = models.FileField(null=True, blank=True, upload_to=message_upload_path)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-created_at',)
+    def __str__(self):
+        return f"پیام #{self.id} از {self.sender}"
