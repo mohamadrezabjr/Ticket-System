@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class AuthConfig(AppConfig):
+class TicketConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'auth'
+    name = 'ticket_app'
