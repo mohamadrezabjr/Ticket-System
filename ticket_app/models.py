@@ -24,6 +24,10 @@ class Ticket(models.Model):
         PENDING = 'P', 'در انتظار پاسخ'
         ANSWERED = 'A', 'پاسخ داده شده'
         CLOSED = 'C', 'بسته شده'
+    class PriorityChoices(models.TextChoices):
+        LOW = ('L', 'کم-جزئی')
+        MEDIUM = ('M', 'متوسط-پیش‌فرض')
+        HIGH = ('H', 'بالا-فوری')
 
     title = models.CharField(max_length=100,)
     description = models.TextField(null=True, blank=True)
@@ -37,16 +41,17 @@ class Ticket(models.Model):
     user_status = models.CharField(
         choices=UserStatus.choices,
         max_length=10,
-        blank = True,
-        null = True,
         default = UserStatus.PENDING
     )
     admin_status = models.CharField(
         choices=AdminStatus.choices ,
         max_length=10,
-        blank = True,
-        null = True,
         default = AdminStatus.NEW
+    )
+    priority = models.CharField(
+        choices=PriorityChoices.choices,
+        max_length=10,
+        default = PriorityChoices.MEDIUM,
     )
     client = models.ForeignKey(
         User,
