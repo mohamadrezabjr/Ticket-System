@@ -1,3 +1,10 @@
-from django.shortcuts import render
+from rest_framework import generics, viewsets
 
-# Create your views here.
+from ticket_app.models import Ticket
+from ticket_app.serializers import TicketSerializer
+
+class TicketViewSet(viewsets.ModelViewSet):
+    queryset = Ticket.objects.all()
+    serializer_class = TicketSerializer
+
+
