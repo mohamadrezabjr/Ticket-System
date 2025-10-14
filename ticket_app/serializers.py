@@ -1,20 +1,17 @@
 from rest_framework import serializers
 
 from ticket_app.models import Ticket
-
+from ticket_app.models import TicketCategory
 
 class TicketSerializer(serializers.ModelSerializer):
 
-    admin_status_display = serializers.SerializerMethodField()
-    user_status_display = serializers.SerializerMethodField()
-    priority_display = serializers.SerializerMethodField()
-
-    def get_admin_status_display(self, obj):
-        return obj.get_admin_status_display()
-    def get_user_status_display(self, obj):
-        return obj.get_user_status_display()
-    def get_priority_display(self, obj):
-        return obj.get_priority_display()
+    admin_status_display = serializers.CharField(source='get_admin_status_display', read_only=True)
+    user_status_display = serializers.CharField(source='get_user_status_display', read_only=True)
+    priority_display = serializers.CharField(source='get_priority_display', read_only=True)
+    category = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset= TicketCategory.objects.all()
+    )
 
     class Meta:
         model = Ticket
@@ -22,14 +19,25 @@ class TicketSerializer(serializers.ModelSerializer):
             'pk',
             'title',
             'description',
-            'user_status',
-            'admin_status',
-            'user_status_display',
-            'admin_status_display',
             'priority',
-            'priority_display',
             'category',
             'client',
             'created_at',
             'updated_at',
+            'priority_display',
+            'admin_status_display',
+            'user_status_display',
+            'user_status',
+            'admin_status',
+        ]
+        read_only_fields = [
+            'pk',
+            'client',
+            'created_at',
+            'updated_at',
+            'priority_display',
+            'admin_status_display',
+            'user_status_display',
+            'user_status',
+            'admin_status',
         ]
