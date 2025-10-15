@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from permissions import IsOwner
+from auth_app.permissions import IsOwner
 from .models import Profile , User
 from .serializers import (
     UserRegisterSerializer , UserLogoutSerializer , UserProfileSerializer , UpdateProfileSerializer

@@ -2,10 +2,10 @@ from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from auth_app.permissions import IsAdmin
+from auth_app.permissions import IsAdmin, IsSupportOrAdmin, IsTicketOwner
+
 from ticket_app.models import Ticket
 from ticket_app.serializers import TicketSerializer
-from permissions import IsOwner
 
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
@@ -14,16 +14,17 @@ class TicketViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         user = self.request.user
-        if user.is_authenticated and not user.is_superuser:
+        is_admin_or_support = self.request.user.is_superuser or self.request.user.is_support
+        if user.is_authenticated and not is_admin_or_support:
             queryset = queryset.filter(client=user)
         return queryset
 
     def get_permissions(self):
         permission_map = {
-            'retrieve': [IsAuthenticated, IsOwner | IsAdmin],
-            'update': [IsAuthenticated, IsOwner | IsAdmin],
-            'partial_update': [IsAuthenticated, IsOwner | IsAdmin],
-            'destroy': [IsAuthenticated, IsOwner | IsAdmin],
+            'retrieve': [IsAuthenticated, IsTicketOwner | IsSupportOrAdmin],
+            'update': [IsAuthenticated, IsTicketOwner | IsSupportOrAdmin],
+            'partial_update': [IsAuthenticated, IsTicketOwner | IsAdmin],
+            'destroy': [IsAuthenticated, IsTicketOwner | IsAdmin],
         }
         default_permissions = [IsAuthenticated]
         permission_classes = permission_map.get(self.action, default_permissions)
@@ -39,4 +40,6 @@ class TicketViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(client=self.request.user)
+
+
 
