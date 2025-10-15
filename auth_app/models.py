@@ -46,7 +46,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE , related_name='profile_user')
     email = models.EmailField(max_length=100 , null=True , blank=True ,db_index=True , unique=True)
     username = models.CharField(max_length=100 , null=True , blank=True)
-    image = models.ImageField(upload_to='profiles/', null=True , blank=True)
+    image = models.ImageField(upload_to='media/profiles/', null=True , blank=True)
     city = models.ForeignKey(Cities , on_delete=models.CASCADE , null=True , blank=True)
     province = models.ForeignKey(Provinces , on_delete=models.CASCADE , null=True , blank=True)
 
