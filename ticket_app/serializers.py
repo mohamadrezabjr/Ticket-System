@@ -54,3 +54,34 @@ class MessageListSerializer(serializers.ModelSerializer):
             'file',
             'created_at',
         ]
+class MessageCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Message
+        fields = [
+            'pk',
+            'ticket',
+            'body',
+            'sender',
+            'file',
+            'created_at',
+        ]
+        read_only_fields = [
+            'pk',
+            'ticket',
+            'created_at',
+        ]
+
+    def create(self, validated_data):
+        ticket = validated_data['ticket']
+        sender = validated_data['sender']
+        if sender.is_superuser or sender.is_support:
+            ticket.admin = Ticket.AdminStatus.ANSWERED
+            ticket.user_status = Ticket.UserStatus.ANSWERED
+            ticket.save()
+        else:
+            ticket.admin_status = Ticket.AdminStatus.NEW
+            ticket.user_status = Ticket.UserStatus.PENDING
+            ticket.save()
+        message = Message.objects.create(**validated_data)
+        return message

@@ -6,5 +6,5 @@ router = routers.DefaultRouter()
 router.register('tickets', views.TicketViewSet)
 urlpatterns = [
     path('', include(router.urls)),
-    path('tickets/<int:ticket_id>/messages/', views.MessagesList.as_view(), name='messages'),
+    path('tickets/<int:ticket_id>/messages/', views.MessagesListCreateView.as_view(), name='messages'),
 ]
