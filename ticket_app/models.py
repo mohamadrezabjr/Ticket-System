@@ -71,7 +71,7 @@ class Ticket(models.Model):
 
 
 def message_upload_path(instance, filename):
-    return f'messages/ticket_{instance.ticket.id}/{filename}'
+    return f'files/ticket_{instance.ticket.id}/message_{instance.id}_{filename}'
 
 class Message(models.Model):
     ticket = models.ForeignKey(
