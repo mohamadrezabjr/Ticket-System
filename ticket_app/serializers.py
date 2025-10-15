@@ -1,7 +1,8 @@
 from rest_framework import serializers
 
-from ticket_app.models import Ticket
+from ticket_app.models import Ticket, Message
 from ticket_app.models import TicketCategory
+from ticket_system.serializers import UserInfoSerializer
 
 class TicketSerializer(serializers.ModelSerializer):
 
@@ -40,4 +41,16 @@ class TicketSerializer(serializers.ModelSerializer):
             'user_status_display',
             'user_status',
             'admin_status',
+        ]
+class MessageListSerializer(serializers.ModelSerializer):
+    sender = UserInfoSerializer(read_only=True)
+
+    class Meta:
+        model = Message
+        fields = [
+            'pk',
+            'body',
+            'sender',
+            'file',
+            'created_at',
         ]

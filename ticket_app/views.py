@@ -1,11 +1,14 @@
 from rest_framework import generics, viewsets
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from auth_app.permissions import IsAdmin, IsSupportOrAdmin, IsTicketOwner
 
-from ticket_app.models import Ticket
-from ticket_app.serializers import TicketSerializer
+from ticket_app.models import Ticket, Message
+from ticket_app.serializers import TicketSerializer, MessageListSerializer
+from ticket_system.serializers import TicketInfoSerializer
 
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
@@ -41,5 +44,34 @@ class TicketViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(client=self.request.user)
 
+class MessagesList(generics.ListAPIView):
 
+    queryset = Message.objects.all()
+    serializer_class = MessageListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        ticket_id = self.kwargs['ticket_id']
+        ticket = get_object_or_404(Ticket, pk=ticket_id)
+        user = self.request.user
+        is_admin_or_support = user.is_superuser or user.is_support
+        queryset = queryset.filter(ticket=ticket)
+
+        if user == ticket.client or is_admin_or_support:
+            return queryset
+        raise PermissionDenied('You are not allowed to see this ticket')
+    def list(self, request, *args, **kwargs):
+        messages = self.get_queryset()
+        ticket_id = self.kwargs['ticket_id']
+        ticket = get_object_or_404(Ticket, pk=ticket_id)
+        serializer = self.get_serializer(messages, many=True)
+        ticket_data = TicketInfoSerializer(ticket).data
+
+        return Response(
+            {
+                "ticket_info":ticket_data,
+                "messages": serializer.data,
+            }
+        )
 
