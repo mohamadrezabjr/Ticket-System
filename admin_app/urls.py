@@ -5,7 +5,7 @@ from rest_framework_nested import routers
 
 router = routers.DefaultRouter()
 router.register('users', views.UserViewSet, basename = 'users')
-router.register('notifications', views.NotificationViwset, basename = 'notification')
+router.register('notifications', views.NotificationViewSet, basename = 'notification')
 
 urlpatterns = router.urls
 

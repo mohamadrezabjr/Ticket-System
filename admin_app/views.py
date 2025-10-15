@@ -33,7 +33,7 @@ class UserViewSet(ModelViewSet):
 
     
 
-class NotificationViwset(ModelViewSet):
+class NotificationViewSet(ModelViewSet):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]
