@@ -31,6 +31,7 @@ class TicketSerializer(serializers.ModelSerializer):
             'user_status_display',
             'user_status',
             'admin_status',
+            'is_closed',
         ]
         read_only_fields = [
             'pk',
@@ -42,6 +43,7 @@ class TicketSerializer(serializers.ModelSerializer):
             'user_status_display',
             'user_status',
             'admin_status',
+            'is_closed',
         ]
 class MessageListSerializer(serializers.ModelSerializer):
     sender = UserInfoSerializer(read_only=True)

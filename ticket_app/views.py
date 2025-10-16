@@ -1,4 +1,5 @@
-from rest_framework import generics, viewsets
+from rest_framework.decorators import action
+from rest_framework import generics, viewsets, status
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
@@ -40,6 +41,13 @@ class TicketViewSet(viewsets.ModelViewSet):
         if request.user != instance.client and instance.admin_status == Ticket.AdminStatus.NEW :
             Ticket.objects.filter(id = instance.id).update(admin_status =Ticket.AdminStatus.SEEN)
         return Response(serializer.data)
+
+    @action(detail = True, methods=['post', 'get'], permission_classes=[IsTicketOwner, IsSupportOrAdmin])
+    def close(self, request, pk=None):
+        instance = self.get_object()
+        instance.is_closed = True
+        instance.save()
+        return Response({'message' : f'Ticket #{instance.id} successfully closed.'}, status=status.HTTP_200_OK)
 
     def perform_create(self, serializer):
         serializer.save(client=self.request.user)
