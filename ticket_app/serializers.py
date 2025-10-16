@@ -1,3 +1,4 @@
+from django.template.context_processors import request
 from rest_framework import serializers
 
 from ticket_app.models import Ticket, Message
@@ -44,6 +45,11 @@ class TicketSerializer(serializers.ModelSerializer):
         ]
 class MessageListSerializer(serializers.ModelSerializer):
     sender = UserInfoSerializer(read_only=True)
+    is_sender = serializers.SerializerMethodField(read_only=True)
+
+    def get_is_sender(self, obj):
+        user = self.context.get('user')
+        return user == obj.sender
 
     class Meta:
         model = Message
@@ -53,6 +59,7 @@ class MessageListSerializer(serializers.ModelSerializer):
             'sender',
             'file',
             'created_at',
+            'is_sender'
         ]
 class MessageCreateSerializer(serializers.ModelSerializer):
 

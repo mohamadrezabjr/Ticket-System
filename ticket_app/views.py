@@ -54,6 +54,13 @@ class MessagesListCreateView(generics.ListCreateAPIView):
         if self.request.method == 'POST':
             return MessageCreateSerializer
         return MessageListSerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['user'] = self.request.user
+        return context
+
+
     def get_queryset(self):
         queryset = super().get_queryset()
         ticket_id = self.kwargs['ticket_id']
