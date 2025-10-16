@@ -38,8 +38,7 @@ class TicketViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         if request.user != instance.client and instance.admin_status == Ticket.AdminStatus.NEW :
-            instance.admin_status = Ticket.AdminStatus.SEEN
-            instance.save()
+            Ticket.objects.filter(id = instance.id).update(admin_status =Ticket.AdminStatus.SEEN)
         return Response(serializer.data)
 
     def perform_create(self, serializer):

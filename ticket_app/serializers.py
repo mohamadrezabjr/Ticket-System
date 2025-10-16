@@ -83,7 +83,7 @@ class MessageCreateSerializer(serializers.ModelSerializer):
         ticket = validated_data['ticket']
         sender = validated_data['sender']
         if sender.is_superuser or sender.is_support:
-            ticket.admin = Ticket.AdminStatus.ANSWERED
+            ticket.admin_status = Ticket.AdminStatus.ANSWERED
             ticket.user_status = Ticket.UserStatus.ANSWERED
             ticket.save()
         else:
