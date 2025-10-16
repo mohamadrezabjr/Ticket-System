@@ -1,5 +1,5 @@
 from django.template.context_processors import request
-from rest_framework import serializers
+from rest_framework import serializers, status
 
 from ticket_app.models import Ticket, Message
 from ticket_app.models import TicketCategory
@@ -82,6 +82,10 @@ class MessageCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         ticket = validated_data['ticket']
         sender = validated_data['sender']
+
+        if ticket.is_closed:
+            raise serializers.ValidationError({'error' :'Ticket is closed'}, status.HTTP_400_BAD_REQUEST)
+
         if sender.is_superuser or sender.is_support:
             ticket.admin_status = Ticket.AdminStatus.ANSWERED
             ticket.user_status = Ticket.UserStatus.ANSWERED
