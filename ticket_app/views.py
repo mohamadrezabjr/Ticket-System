@@ -35,6 +35,11 @@ class TicketViewSet(viewsets.ModelViewSet):
         permission_classes = permission_map.get(self.action, default_permissions)
         return [perm() for perm in permission_classes]
 
+    def get_object(self):
+        obj = get_object_or_404(Ticket, pk=self.kwargs['pk'])
+        self.check_object_permissions(self.request, obj)
+        return obj
+
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
