@@ -27,8 +27,8 @@ class TicketViewSet(viewsets.ModelViewSet):
         permission_map = {
             'retrieve': [IsAuthenticated, IsTicketOwner | IsSupportOrAdmin],
             'update': [IsAuthenticated, IsTicketOwner | IsSupportOrAdmin],
-            'partial_update': [IsAuthenticated, IsTicketOwner | IsAdmin],
-            'destroy': [IsAuthenticated, IsTicketOwner | IsAdmin],
+            'partial_update': [IsAuthenticated, IsTicketOwner | IsSupportOrAdmin],
+            'destroy': [IsAuthenticated, IsAdmin],
         }
         default_permissions = [IsAuthenticated]
         permission_classes = permission_map.get(self.action, default_permissions)
