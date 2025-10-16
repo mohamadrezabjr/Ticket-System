@@ -1,13 +1,13 @@
 from rest_framework import serializers
 from django.contrib.auth import  get_user_model
-from .models import *
+from .models import Notification
 
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'password', 'is_staff']
+        fields = ['id', 'password', 'is_staff']
 
 class NotificationSerializer(serializers.ModelSerializer):
     user_id = serializers.PrimaryKeyRelatedField(
