@@ -63,6 +63,14 @@ class Ticket(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    is_closed = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self.is_closed :
+            self.admin_status = Ticket.AdminStatus.CLOSED
+            self.user_status = Ticket.UserStatus.CLOSED
+        super().save(*args, **kwargs)
+
     class Meta:
         ordering = ('-created_at',)
 
