@@ -14,6 +14,7 @@ class TicketSerializer(serializers.ModelSerializer):
         slug_field='name',
         queryset= TicketCategory.objects.all()
     )
+    file = serializers.FileField(required=False)
 
     class Meta:
         model = Ticket
@@ -32,6 +33,7 @@ class TicketSerializer(serializers.ModelSerializer):
             'user_status',
             'admin_status',
             'is_closed',
+            'file',
         ]
         read_only_fields = [
             'pk',
@@ -45,6 +47,19 @@ class TicketSerializer(serializers.ModelSerializer):
             'admin_status',
             'is_closed',
         ]
+
+    def create(self, validated_data):
+        try:
+            file = validated_data.pop('file')
+        except KeyError:
+            file = None
+
+        ticket = Ticket.objects.create(**validated_data)
+        description = validated_data.get('description', None)
+        message = Message.objects.create(ticket=ticket, body=description, file=file, sender = ticket.client)
+
+        return ticket
+
 class MessageListSerializer(serializers.ModelSerializer):
     sender = UserInfoSerializer(read_only=True)
     is_sender = serializers.SerializerMethodField(read_only=True)
