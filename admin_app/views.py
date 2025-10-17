@@ -5,6 +5,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import *
+from auth_app.models import Profile
 from .models import *
 from .serializers import *
 # Create your views here.
@@ -60,5 +61,4 @@ class NotificationViewSet(ModelViewSet):
         
         return Response({'message': 'اعلان خوانده شد'})
     
-
 
