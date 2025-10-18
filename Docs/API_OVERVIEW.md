@@ -33,7 +33,7 @@ This document lists all API endpoints for the TicketSystem project, including au
 | `/auth/profile/<user_id>/` | GET | Get user profile details | Authenticated |
 | `/auth/profile/update/<user_id>/` | PATCH | Update user profile | Authenticated |
 
-> For full example requests and responses, see [Auth API – Authentication & Profile](Docs/API_AUTH_REQUESTS.md).
+> For full example requests and responses, see [Auth API – Authentication & Profile](API_AUTH_REQUESTS.md).
 
 ---
 
@@ -56,7 +56,7 @@ This document lists all API endpoints for the TicketSystem project, including au
 | `/admin/notifications/<notification_id>/` | GET | Get notification details | Authenticated |
 | `/admin/notifications/<notification_id>/` | PATCH | Update a notification | Admin |
 | `/admin/notifications/<notification_id>/` | DELETE | Delete a notification | Admin |
-> For full example requests and responses, see [Admin API – Users & Notifications](Docs/API_ADMIN_REQUESTS.md).
+> For full example requests and responses, see [Admin API – Users & Notifications](API_ADMIN_REQUESTS.md).
 
 ---
 
@@ -75,7 +75,7 @@ This document lists all API endpoints for the TicketSystem project, including au
 | `/ticket-categories/<category_id>/` | GET         | Get ticket category details                     | Authenticated |
 | `/ticket-categories/<ticket_id>/`   | PATCH       | moddify a ticket cateogry                       | Authenticated |
 
-> For full example requests and responses, see the [Ticket API – Tickets & Messages](Docs/API_TICKETS_REQUESTS.md) document.
+> For full example requests and responses, see the [Ticket API – Tickets & Messages](API_TICKETS_REQUESTS.md) document.
 
 ---
 
