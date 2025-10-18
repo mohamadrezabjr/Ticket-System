@@ -116,7 +116,7 @@ class MessageCreateSerializer(serializers.ModelSerializer):
     
 
 
-# class CategorySerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = TicketCategory
-#         fields = '__all__'
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TicketCategory
+        fields = '__all__'
