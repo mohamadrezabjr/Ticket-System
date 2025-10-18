@@ -92,6 +92,7 @@ class MessageCreateSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = [
             'pk',
+            'sender',
             'ticket',
             'created_at',
         ]
