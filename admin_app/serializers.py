@@ -1,57 +1,104 @@
 from rest_framework import serializers
-from django.contrib.auth import  get_user_model
-from auth_app.models import Profile
+# from django.contrib.auth import  get_user_model
 from .models import Notification
-from auth_app.models import User
+from auth_app.models import User, Profile
 
-
-
-class ProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Profile
-        fields = ['id', 'email', 'username', 'image']
 
 class UserSerializer(serializers.ModelSerializer):
-    profile = ProfileSerializer(required = False)
+    role = serializers.CharField(required = False)    
+    email = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    username = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    image = serializers.ImageField(write_only=True, required=False, allow_null=True)
+    password = serializers.CharField(write_only=True, required=False)
+
     class Meta:
         model = User
-        fields = ['id', 'phone', 'is_support', 'is_user', 'profile']
-    
+        fields = ['id', 'phone', 'password', 'role', 'email', 'username', 'image']
+
+
+    def get_role(self, obj):
+        if getattr(obj, 'is_support', False):
+            return "support"
+        elif getattr(obj, 'is_user', False):
+            return "user"
+        return None
+
     def create(self, validated_data):
-        profile_data = validated_data.pop('profile', None)
-        password = validated_data.pop('phone', None)
+        role = validated_data.pop('role', None)
+        password = validated_data.pop('password', None)
+        email = validated_data.pop('email', None)
+        username = validated_data.pop('username', None)
+        image = validated_data.pop('image', None)
+
         user = User.objects.create(**validated_data)
+
+        if role == 'support':
+            user.is_support = True
+            user.is_user = False
+        elif role == 'user':
+            user.is_user = True
+            user.is_support = False
+        else:
+            raise serializers.ValidationError({'role': 'Role must be "support" or "user".'})
+        user.save()
+    
+
         if password:
             user.set_password(password)
-            user.save()
-        if profile_data:
-            Profile.objects.create(user = user, **validated_data)
+        user.save()
+
+        (profile, created) = Profile.objects.get_or_create(user = user)
+        if email:
+            profile.email = email
+        if username:
+            profile.username = username
+        if image:
+            profile.image = image
+        profile.save()
+
         return user
     
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if instance.is_support:
+            data['role'] = "support"
+        elif instance.is_user:
+            data['role'] = "user"
+        else:
+            data['role'] = None
+        profile = Profile.objects.filter(user = instance).first()
+        data['email'] = profile.email if profile else None
+        data['username'] = profile.username if profile else None
+        data['image'] = profile.image.url if profile and profile.image else None
+        return data
+    
     def update(self, instance, validated_data):
-        instance.phone = validated_data.get('phone', instance.phone)
-        instance.is_support = validated_data.get('is_support', instance.is_support)
-        instance.is_user = validated_data.get('is_user', instance.is_user)
-        instance.save()
+        role = validated_data.get('role', 'None')
+        if role == 'support':
+            instance.is_support = True
+            instance.is_user = False
+        elif role == 'user':
+            instance.is_user = True
+            instance.is_support = False
         
-        profile_data = validated_data.get('profile', None)
-        if profile_data:
-            profile = getattr(instance, 'profile', None)
-            if profile:
-                profile.email = profile_data.get('email', profile.email)
-                profile.username = profile_data.get('username', profile.username)
-                profile.image = profile_data.get('image', profile.image)
-            else:
-                Profile.objects.create(
-                    user = instance,
-                    email = profile_data.get('email', ''),
-                    username = profile_data.get('username', ''),
-                    image = profile_data.get('image', None)
-                )
+        phone = validated_data.get('phone', None)
+        if phone:
+            instance.phone = phone
+        password = validated_data.get('password', None)
+        if password:
+            instance.set_password(password)
+        instance.save()
+            
+        profile = getattr(instance, 'profile_user', None)
+        profile.email = validated_data.get('email', profile.email)
+        profile.username = validated_data.get('username', profile.username)
+        profile.image = validated_data.get('image', profile.image)
+        profile.save()
+        
         return instance
         
         
-
+    
 class NotificationSerializer(serializers.ModelSerializer):
     user_ids = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), required= False, many = True
@@ -76,6 +123,9 @@ class NotificationSerializer(serializers.ModelSerializer):
         else:
             user = self.context['request'].user
             return Notification.objects.create(user = user, **validated_data)
+            
+        
+        
             
         
         
