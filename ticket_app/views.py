@@ -4,9 +4,11 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
+from .models import TicketCategory
 from auth_app.permissions import IsAdmin, IsSupportOrAdmin
 from ticket_app.permissions import IsTicketOwner
+from .serializers import CategorySerializer
+from .permissions import IsAdminOrReadOnly
 
 from ticket_app.models import Ticket, Message
 from ticket_app.serializers import TicketSerializer, MessageListSerializer, MessageCreateSerializer
@@ -108,3 +110,14 @@ class MessagesListCreateView(generics.ListCreateAPIView):
             raise PermissionDenied('You are not allowed to send message on this ticket')
 
 
+class CategoryListCreateAPIView(generics.ListCreateAPIView):
+    queryset = TicketCategory.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [IsAdminOrReadOnly]
+
+class CategoryDetailAPIView(generics.RetrieveUpdateAPIView):
+    queryset = TicketCategory.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [IsAdminOrReadOnly]
+    lookup_field = 'id'
+    lookup_url_kwarg = 'category_id'

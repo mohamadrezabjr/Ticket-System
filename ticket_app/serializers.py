@@ -1,6 +1,6 @@
 from django.template.context_processors import request
 from rest_framework import serializers, status
-
+from .models import TicketCategory
 from ticket_app.models import Ticket, Message
 from ticket_app.models import TicketCategory
 from ticket_system.serializers import UserInfoSerializer
@@ -113,3 +113,10 @@ class MessageCreateSerializer(serializers.ModelSerializer):
             ticket.save()
         message = Message.objects.create(**validated_data)
         return message
+    
+
+
+# class CategorySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = TicketCategory
+#         fields = '__all__'
