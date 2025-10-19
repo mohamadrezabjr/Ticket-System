@@ -210,7 +210,7 @@ __marimo__/
 *.pyc
 __pycache__
 media
-
+files
 
 .idea/**/workspace.xml
 .idea/**/tasks.xml

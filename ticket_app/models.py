@@ -63,6 +63,14 @@ class Ticket(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    is_closed = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self.is_closed :
+            self.admin_status = Ticket.AdminStatus.CLOSED
+            self.user_status = Ticket.UserStatus.CLOSED
+        super().save(*args, **kwargs)
+
     class Meta:
         ordering = ('-created_at',)
 
@@ -71,7 +79,7 @@ class Ticket(models.Model):
 
 
 def message_upload_path(instance, filename):
-    return f'messages/ticket_{instance.ticket.id}/{filename}'
+    return f'files/ticket_{instance.ticket.id}/message_{instance.id}_{filename}'
 
 class Message(models.Model):
     ticket = models.ForeignKey(
