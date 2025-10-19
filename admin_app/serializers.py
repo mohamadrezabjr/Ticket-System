@@ -100,29 +100,32 @@ class UserSerializer(serializers.ModelSerializer):
         
     
 class NotificationSerializer(serializers.ModelSerializer):
-    user_ids = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), required= False, many = True
-    )
-    
+    user_ids = serializers.ListField(allow_empty=False, write_only=True)
+    category_display = serializers.CharField(required=False, source='get_category_display')
+
+    def to_internal_value(self, data):
+        if isinstance(data.get('user_ids'), str):
+            data['user_ids'] = [data['user_ids']]
+        return super().to_internal_value(data)
+
     class Meta:
         model = Notification
-        fields = ['id', 'title', 'message', 'is_read', 'created_at', 'user_ids']
-        read_only_fields = ['id', 'is_read', 'created_at']
+        fields = ['id', 'title','category','category_display', 'message', 'is_read', 'created_at', 'user_ids']
+        read_only_fields = ['id', 'category_display','is_read', 'created_at']
         
     def create(self, validated_data):
-        user_list  = validated_data.pop('user_ids', None)
-        if user_list == 'all':
+        user_ids  = validated_data.pop('user_ids', None)
+        if user_ids == ['all']:
             user_list = User.objects.all()
-            
-        if user_list:
-            notifications = []
-            for item in user_list:
-                notification = Notification.objects.create(user = item, **validated_data)
-                notifications.append(notification)
-            return notifications
-        else:
-            user = self.context['request'].user
-            return Notification.objects.create(user = user, **validated_data)
+        else :
+            user_list = User.objects.filter(id__in=user_ids)
+
+        for item in user_list:
+            notification = Notification.objects.create(user = item, **validated_data)
+
+        user = self.context['request'].user
+        notification = Notification.objects.create(user = user, **validated_data)
+        return notification
             
         
         
