@@ -1,10 +1,22 @@
 from pathlib import Path
 from datetime import timedelta
+from dotenv import load_dotenv
+import os
+
+
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-+06*16+j88$o2le%arvbcxl=jit%)i126^$#yuj#c8c928pk-g'
-DEBUG = True
+SECRET_KEY = os.getenv('SECRET_KEY', 'test-secret-key')
+ENVIRONMENT = os.getenv('ENVIRONMENT', 'production')
+
+if ENVIRONMENT == 'development':
+    DEBUG = True
+else :
+    DEBUG = False
+
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
@@ -111,3 +123,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 # Custom User
 AUTH_USER_MODEL = "auth_app.User"
+
+#Celery urls
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL

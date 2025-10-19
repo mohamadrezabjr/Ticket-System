@@ -1,0 +1,31 @@
+services:
+  redis:
+    image: redis:7
+    container_name: myredis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  web:
+    build: .
+    container_name: django_web
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    env_file:
+      - .env
+
+  celery:
+    build: .
+    container_name: celery_worker
+    command: celery -A ticket_system worker --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+    env_file:
+      - .env
