@@ -1,5 +1,4 @@
 from rest_framework import serializers
-# from django.contrib.auth import  get_user_model
 from .models import Notification
 from auth_app.models import User, Profile
 
@@ -96,11 +95,9 @@ class UserSerializer(serializers.ModelSerializer):
         profile.save()
         
         return instance
-        
-        
-    
+
 class NotificationSerializer(serializers.ModelSerializer):
-    user_ids = serializers.ListField(allow_empty=False, write_only=True)
+    user_ids = serializers.ListField(allow_empty=True, write_only=True,)
     category_display = serializers.CharField(required=False, source='get_category_display')
 
     def to_internal_value(self, data):

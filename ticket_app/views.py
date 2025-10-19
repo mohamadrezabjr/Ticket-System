@@ -1,6 +1,7 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
-from rest_framework import generics, viewsets, status
-from rest_framework.exceptions import PermissionDenied
+from rest_framework import generics, viewsets, status, serializers, filters
+from rest_framework.exceptions import PermissionDenied, NotFound
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -15,8 +16,12 @@ from ticket_app.serializers import TicketSerializer, MessageListSerializer, Mess
 from ticket_system.serializers import TicketInfoSerializer
 
 class TicketViewSet(viewsets.ModelViewSet):
-    queryset = Ticket.objects.all()
+    queryset = Ticket.objects.select_related('client__profile_user', 'category',).all()
     serializer_class = TicketSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend]
+    search_fields = ['description', 'title']
+    filterset_fields = ['priority','user_status']
+    ordering_fields = '__all__'
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -61,7 +66,7 @@ class TicketViewSet(viewsets.ModelViewSet):
 
 class MessagesListCreateView(generics.ListCreateAPIView):
 
-    queryset = Message.objects.all()
+    queryset = Message.objects.select_related('ticket__category', 'sender__profile_user', 'ticket__client').all()
     permission_classes = [IsAuthenticated,]
 
     def get_serializer_class(self):
@@ -78,7 +83,11 @@ class MessagesListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         queryset = super().get_queryset()
         ticket_id = self.kwargs['ticket_id']
-        self.ticket = get_object_or_404(Ticket, pk=ticket_id)
+        try:
+            self.ticket =Ticket.objects.select_related('category', 'client').get(id = ticket_id)
+        except Ticket.DoesNotExist:
+            self.ticket = None
+            return Response({'message' : 'Ticket not found'}, status=status.HTTP_404_NOT_FOUND)
         user = self.request.user
         is_admin_or_support = user.is_superuser or user.is_support
         queryset = queryset.filter(ticket=self.ticket)
@@ -90,8 +99,10 @@ class MessagesListCreateView(generics.ListCreateAPIView):
     def list(self, request, *args, **kwargs):
         messages = self.get_queryset()
         serializer = self.get_serializer(messages, many=True)
-        ticket_data = TicketInfoSerializer(self.ticket).data
-
+        if self.ticket :
+            ticket_data = TicketInfoSerializer(self.ticket).data
+        else :
+            return Response({'message' : 'Ticket not found'}, status=status.HTTP_404_NOT_FOUND)
         return Response(
             {
                 "ticket_info":ticket_data,
@@ -102,7 +113,10 @@ class MessagesListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         user = self.request.user
         ticket_id = self.kwargs['ticket_id']
-        ticket = get_object_or_404(Ticket, pk=ticket_id)
+        try:
+            ticket =Ticket.objects.select_related('category', 'client').get(id = ticket_id)
+        except Ticket.DoesNotExist:
+            raise NotFound({'message' : 'Ticket not found'})
         is_admin_or_support = user.is_superuser or user.is_support
         if user == ticket.client or is_admin_or_support:
             serializer.save(sender=self.request.user, ticket=ticket)
