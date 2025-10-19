@@ -1,5 +1,6 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
-from rest_framework import generics, viewsets, status, serializers
+from rest_framework import generics, viewsets, status, serializers, filters
 from rest_framework.exceptions import PermissionDenied, NotFound
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
@@ -17,6 +18,10 @@ from ticket_system.serializers import TicketInfoSerializer
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.select_related('client__profile_user', 'category',).all()
     serializer_class = TicketSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend]
+    search_fields = ['description', 'title']
+    filterset_fields = ['priority','user_status']
+    ordering_fields = '__all__'
 
     def get_queryset(self):
         queryset = super().get_queryset()

@@ -30,9 +30,6 @@ class UserViewSet(ModelViewSet):
     def loguot_user(self, request):
         logout(request)
         return Response({'message': 'خروج موفق'})
-        
-
-    
 
 class NotificationViewSet(ModelViewSet):
     queryset = Notification.objects.all()
@@ -46,7 +43,7 @@ class NotificationViewSet(ModelViewSet):
     
     def get_queryset(self):
         user = self.request.user
-        if user.is_staff:
+        if user.is_supperuser:
             return Notification.objects.all()
         return Notification.objects.filter(user = user)
     
@@ -60,5 +57,3 @@ class NotificationViewSet(ModelViewSet):
         notification.save()
         
         return Response({'message': 'اعلان خوانده شد'})
-    
-

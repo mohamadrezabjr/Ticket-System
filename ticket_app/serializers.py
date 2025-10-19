@@ -6,6 +6,7 @@ from ticket_app.models import TicketCategory
 from ticket_system.serializers import UserInfoSerializer
 
 class TicketSerializer(serializers.ModelSerializer):
+    client = UserInfoSerializer(read_only=True)
 
     admin_status_display = serializers.CharField(source='get_admin_status_display', read_only=True)
     user_status_display = serializers.CharField(source='get_user_status_display', read_only=True)
