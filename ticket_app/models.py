@@ -79,7 +79,7 @@ class Ticket(models.Model):
 
 
 def message_upload_path(instance, filename):
-    return f'files/ticket_{instance.ticket.id}/message_{instance.id}_{filename}'
+    return f'files/ticket_{instance.ticket.id}/{instance.created_at.strftime('%Y-%m-%d %H:%M')}_{filename}'
 
 class Message(models.Model):
     ticket = models.ForeignKey(
@@ -95,10 +95,11 @@ class Message(models.Model):
         related_name='messages'
     )
     body = models.TextField(null=True, blank=True)
-    file = models.FileField(null=True, blank=True, upload_to=message_upload_path)
     created_at = models.DateTimeField(auto_now_add=True)
+    file = models.FileField(null=True, blank=True, upload_to=message_upload_path)
 
     class Meta:
         ordering = ('-created_at',)
+
     def __str__(self):
         return f"پیام #{self.id} از {self.sender}"

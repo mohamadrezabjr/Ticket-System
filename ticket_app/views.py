@@ -15,6 +15,9 @@ from ticket_app.models import Ticket, Message
 from ticket_app.serializers import TicketSerializer, MessageListSerializer, MessageCreateSerializer
 from ticket_system.serializers import TicketInfoSerializer
 
+def is_admin_or_support(user):
+    return user.is_superuser or user.is_support
+
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.select_related('client__profile_user', 'category',).all()
     serializer_class = TicketSerializer
@@ -26,8 +29,7 @@ class TicketViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         user = self.request.user
-        is_admin_or_support = user.is_superuser or user.is_support
-        if not is_admin_or_support:
+        if not is_admin_or_support(user):
             queryset = queryset.filter(client=user)
         return queryset
 
@@ -89,10 +91,9 @@ class MessagesListCreateView(generics.ListCreateAPIView):
             self.ticket = None
             return Response({'message' : 'Ticket not found'}, status=status.HTTP_404_NOT_FOUND)
         user = self.request.user
-        is_admin_or_support = user.is_superuser or user.is_support
         queryset = queryset.filter(ticket=self.ticket)
 
-        if user == self.ticket.client or is_admin_or_support:
+        if user == self.ticket.client or is_admin_or_support(user):
             return queryset
         raise PermissionDenied('You are not allowed to see this ticket')
 
@@ -117,8 +118,8 @@ class MessagesListCreateView(generics.ListCreateAPIView):
             ticket =Ticket.objects.select_related('category', 'client').get(id = ticket_id)
         except Ticket.DoesNotExist:
             raise NotFound({'message' : 'Ticket not found'})
-        is_admin_or_support = user.is_superuser or user.is_support
-        if user == ticket.client or is_admin_or_support:
+
+        if user == ticket.client or is_admin_or_support(user):
             serializer.save(sender=self.request.user, ticket=ticket)
         else:
             raise PermissionDenied('You are not allowed to send message on this ticket')
