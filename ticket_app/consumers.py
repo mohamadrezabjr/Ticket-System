@@ -17,9 +17,13 @@ class TicketConsumer(AsyncWebsocketConsumer):
 
         if not self.ticket:
             await self.close(reason = "ticket_not_found")
+            return
+
         self.user = self.scope['user']
-        # if not self.has_permission(self.user, self.ticket):
-        #     self.close("permission_denied")
+        if not await self.has_permission(self.user, self.ticket):
+            await self.close("permission_denied")
+            return
+
         await self.channel_layer.group_add(
             self.group_name,
             self.channel_name
@@ -32,7 +36,6 @@ class TicketConsumer(AsyncWebsocketConsumer):
             self.group_name,
             self.channel_name
         )
-        await self.close()
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -53,20 +56,22 @@ class TicketConsumer(AsyncWebsocketConsumer):
         )
     async def message_receive(self, event):
         message = event['message']
-        file = event['message'].get('file', None)
-        filename = event['message'].get('filename', None)
-        body = event['message'].get('body', None)
+        file = message.get('file', None)
+        filename = message.get('filename', None)
+        body = message.get('body', None)
         if file :
-            decoded = base64.b64decode(file)
-            file = ContentFile(decoded, name=filename)
+            try:
+                decoded = base64.b64decode(file)
+                file = ContentFile(decoded, name=filename)
+            except(base64.binascii.Error, ValueError):
+                file = None
         message = await self.create_message(self.ticket, body, file)
         await self.send(text_data=json.dumps(message))
 
     @database_sync_to_async
     def create_message(self, ticket, body, file):
-        message = Message.objects.create(ticket = ticket, body = body, file = file)
+        message = Message.objects.create(ticket = ticket, body = body, file = file, sender = self.user)
         return MessageListSerializer(message).data
-
     @database_sync_to_async
     def has_permission(self, user, ticket):
         if user == ticket.client or user.is_superuser or user.is_support:
@@ -74,9 +79,4 @@ class TicketConsumer(AsyncWebsocketConsumer):
         return False
     @database_sync_to_async
     def get_ticket(self, id):
-        try:
-            ticket = Ticket.objects.get(id=id)
-        except Ticket.DoesNotExist:
-            return None
-        else :
-            return ticket
+        return Ticket.objects.filter(id=id).first()
