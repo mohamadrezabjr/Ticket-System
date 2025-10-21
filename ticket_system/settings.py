@@ -20,6 +20,7 @@ else :
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -70,6 +71,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'ticket_system.wsgi.application'
+ASGI_APPLICATION = "ticket_system.asgi.application"
+
 
 DATABASES = {
     'default': {
@@ -118,6 +121,14 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(os.getenv('REDIS_HOST', '127.0.0.1'), os.getenv("REDIS_PORT", 6379))],
+        },
+    },
+}
 # CORS
 CORS_ALLOW_ALL_ORIGINS = True
 
