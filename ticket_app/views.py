@@ -5,10 +5,12 @@ from rest_framework.exceptions import PermissionDenied, NotFound
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from admin_app.models import UserNotification
+from admin_app.serializers import NotificationSerializer
 from .models import TicketCategory
 from auth_app.permissions import IsAdmin, IsSupportOrAdmin
 from ticket_app.permissions import IsTicketOwner
-from .serializers import CategorySerializer
+from .serializers import CategorySerializer, UserNotificationsSerializer
 from .permissions import IsAdminOrReadOnly
 
 from ticket_app.models import Ticket, Message
@@ -136,3 +138,14 @@ class CategoryDetailAPIView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAdminOrReadOnly]
     lookup_field = 'id'
     lookup_url_kwarg = 'category_id'
+
+class UserNotificationsListAPIView(generics.ListAPIView):
+    serializer_class = UserNotificationsSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = UserNotification.objects.all()
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(user=self.request.user)
+
+###TODO UserNotification Detail View

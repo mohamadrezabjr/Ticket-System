@@ -1,5 +1,6 @@
 from django.template.context_processors import request
 from rest_framework import serializers, status
+from admin_app.models import UserNotification
 from .models import TicketCategory
 from ticket_app.models import Ticket, Message
 from ticket_app.models import TicketCategory
@@ -111,8 +112,23 @@ class MessageCreateSerializer(serializers.ModelSerializer):
         return message
     
 
-
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = TicketCategory
         fields = '__all__'
+class UserNotificationsSerializer(serializers.ModelSerializer):
+
+    title = serializers.CharField(source='notification.title', read_only=True)
+    category = serializers.CharField(source='notification.get_category_display', read_only=True)
+    message = serializers.CharField(source='notification.message', read_only=True)
+    class Meta:
+        model = UserNotification
+        fields = [
+            'title',
+            'category',
+            'message',
+            'is_read',
+            'created_at',
+
+        ]
+        ordering = ('created_at',)

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Notification
 from auth_app.models import User, Profile
-
+from admin_app.tasks import create_user_notifications
 
 class UserSerializer(serializers.ModelSerializer):
     role = serializers.CharField(required = False)    
@@ -97,8 +97,8 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
 class NotificationSerializer(serializers.ModelSerializer):
-    user_ids = serializers.ListField(allow_empty=True, write_only=True,)
     category_display = serializers.CharField(required=False, source='get_category_display')
+    user_ids = serializers.ListField(allow_empty=True, write_only=True,)
 
     def to_internal_value(self, data):
         if isinstance(data.get('user_ids'), str):
@@ -107,25 +107,13 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Notification
-        fields = ['id', 'title','category','category_display', 'message', 'is_read', 'created_at', 'user_ids']
-        read_only_fields = ['id', 'category_display','is_read', 'created_at']
+        fields = ['id', 'title','category','category_display', 'message', 'created_at', 'user_ids']
+        read_only_fields = ['id', 'category_display', 'created_at', 'category_display']
         
     def create(self, validated_data):
         user_ids  = validated_data.pop('user_ids', None)
-        if user_ids == ['all']:
-            user_list = User.objects.all()
-        else :
-            user_list = User.objects.filter(id__in=user_ids)
+        notification = Notification.objects.create(**validated_data)
 
-        for item in user_list:
-            notification = Notification.objects.create(user = item, **validated_data)
+        create_user_notifications.delay(user_ids, notification.id)
 
-        user = self.context['request'].user
-        notification = Notification.objects.create(user = user, **validated_data)
         return notification
-            
-        
-        
-            
-        
-        
