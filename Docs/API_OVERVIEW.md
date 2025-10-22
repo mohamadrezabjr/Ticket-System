@@ -78,6 +78,9 @@ This document lists all API endpoints for the TicketSystem project, including au
 > For full example requests and responses, see the [Ticket API – Tickets & Messages](API_TICKETS_REQUESTS.md) document.
 
 ---
+## 4️⃣ WebSocket endpoints
+> For full example requests and responses, see the [Ticket API – WebSocket](API_WEBSOCET_REQUESTS.md) document.
+
 
 ## Notes
 - All endpoints require JWT authentication unless marked as Public.  
