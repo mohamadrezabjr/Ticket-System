@@ -17,7 +17,7 @@ if ENVIRONMENT == 'development':
 else :
     DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     'daphne',
@@ -138,3 +138,7 @@ AUTH_USER_MODEL = "auth_app.User"
 #Celery urls
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+
+#Media
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
