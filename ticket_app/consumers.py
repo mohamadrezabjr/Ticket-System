@@ -20,6 +20,9 @@ class TicketConsumer(AsyncWebsocketConsumer):
             return
 
         self.user = self.scope['user']
+        if not self.user.is_authenticated:
+            await self.close(reason = "user_not_authenticated")
+            return 
         if not await self.has_permission(self.user, self.ticket):
             await self.close("permission_denied")
             return
