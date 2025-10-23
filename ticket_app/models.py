@@ -24,10 +24,10 @@ class Ticket(models.Model):
         PENDING = 'P', 'در انتظار پاسخ'
         ANSWERED = 'A', 'پاسخ داده شده'
         CLOSED = 'C', 'بسته شده'
-    class PriorityChoices(models.TextChoices):
-        LOW = ('1', 'کم-جزئی')
-        MEDIUM = ('2', 'متوسط-پیش‌فرض')
-        HIGH = ('3', 'بالا-فوری')
+    class PriorityChoices(models.IntegerChoices):
+        LOW = (1, 'کم-جزئی')
+        MEDIUM = (2, 'متوسط-پیش‌فرض')
+        HIGH = (3, 'بالا-فوری')
 
     title = models.CharField(max_length=100,)
     description = models.TextField(null=True, blank=True)
@@ -48,7 +48,7 @@ class Ticket(models.Model):
         max_length=10,
         default = AdminStatus.NEW
     )
-    priority = models.CharField(
+    priority = models.IntegerField(
         choices=PriorityChoices.choices,
         max_length=10,
         default = PriorityChoices.MEDIUM,
