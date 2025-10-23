@@ -25,9 +25,9 @@ class Ticket(models.Model):
         ANSWERED = 'A', 'پاسخ داده شده'
         CLOSED = 'C', 'بسته شده'
     class PriorityChoices(models.TextChoices):
-        LOW = ('L', 'کم-جزئی')
-        MEDIUM = ('M', 'متوسط-پیش‌فرض')
-        HIGH = ('H', 'بالا-فوری')
+        LOW = ('1', 'کم-جزئی')
+        MEDIUM = ('2', 'متوسط-پیش‌فرض')
+        HIGH = ('3', 'بالا-فوری')
 
     title = models.CharField(max_length=100,)
     description = models.TextField(null=True, blank=True)
@@ -75,8 +75,7 @@ class Ticket(models.Model):
         ordering = ('-created_at',)
 
     def __str__(self):
-        return f"{self.title} - {self.client}"
-
+        return f"ticket : {self.title} id - {self.id}- {self.client}"
 
 def message_upload_path(instance, filename):
     return f'files/ticket_{instance.ticket.id}/{instance.created_at.strftime('%Y-%m-%d %H:%M')}_{filename}'
