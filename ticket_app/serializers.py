@@ -56,9 +56,10 @@ class TicketSerializer(serializers.ModelSerializer):
             file = validated_data.pop('file')
         except KeyError:
             file = None
-
-        temp_path = default_storage.save(f'temp/{file.name}', ContentFile(file.read()))
-        print(file.name)
+        if file:
+            temp_path = default_storage.save(f'temp/{file.name}', ContentFile(file.read()))
+        else:
+            temp_path = None
         create_ticket_and_first_message.delay(file_path = temp_path, data =validated_data)
 
         return validated_data

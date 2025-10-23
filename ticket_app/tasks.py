@@ -19,17 +19,23 @@ def create_ticket_and_first_message(file_path, data):
     category_id = data.pop('category')
     category = TicketCategory.objects.get(id = category_id)
 
+    description = data.get('description', None)
     ticket = Ticket.objects.create(**data, category=category, client= client)
-    try :
-        with default_storage.open(file_path, 'rb') as f:
-            file = File(f, name = Path(file_path).name)
-            description = data.get('description', None)
-            message = Message.objects.create(ticket=ticket, body=description, file=file, sender=ticket.client)
+    if file_path:
+        try :
+            with default_storage.open(file_path, 'rb') as f:
+                file = File(f, name = Path(file_path).name)
 
-    finally:
-        full_path = os.path.join(settings.MEDIA_ROOT, file_path)
-        if os.path.exists(full_path):
-            os.remove(full_path)
+                message = Message.objects.create(ticket=ticket, body=description, file=file, sender=ticket.client)
+
+        finally:
+            full_path = os.path.join(settings.MEDIA_ROOT, file_path)
+            if os.path.exists(full_path):
+                os.remove(full_path)
+    else :
+        message = Message.objects.create(ticket=ticket, body=description, sender=ticket.client)
+
+
 @shared_task
 def send_admin_answered_notification(user_id, ticket_title):
     user = User.objects.get(id=user_id)
