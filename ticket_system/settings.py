@@ -17,9 +17,10 @@ if ENVIRONMENT == 'development':
 else :
     DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -70,6 +71,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'ticket_system.wsgi.application'
+ASGI_APPLICATION = "ticket_system.asgi.application"
+
 
 DATABASES = {
     'default': {
@@ -118,6 +121,14 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(os.getenv('REDIS_HOST', '127.0.0.1'), os.getenv("REDIS_PORT", 6379))],
+        },
+    },
+}
 # CORS
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -127,3 +138,7 @@ AUTH_USER_MODEL = "auth_app.User"
 #Celery urls
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+
+#Media
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

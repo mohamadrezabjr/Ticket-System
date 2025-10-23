@@ -106,15 +106,7 @@ Then visit:
 ---
 
 ## 📚 API Overview
-
-| Area | Endpoint Examples |
-|------|--------------------|
-| Auth | `/signup`, `/login`, `/logout`, `/profile` |
-| Tickets | `/tickets`, `/tickets/{id}`, `/tickets/{ticket_id}/messages` |
-| Categories | `/categories`, `/categories/{category_id}` |
-| Admin | `/notifications`, `/users` |
-
-Full API documentation is available in the upcoming **API_DOCUMENTATION.md** file.
+>API overview is available in the [**API_OVERVIEW.md**](Docs/API_OVERVIEW.md) file.
 
 ---
 

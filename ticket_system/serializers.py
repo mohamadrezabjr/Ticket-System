@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 class UserInfoSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
     username = serializers.CharField(source = 'profile_user.username' ,max_length=100)
     phone = serializers.CharField(max_length=100)
     profile_image = serializers.ImageField(source='profile_user.image', read_only=True)

@@ -1,9 +1,13 @@
-from django.template.context_processors import request
 from rest_framework import serializers, status
-from .models import TicketCategory
+from admin_app.models import UserNotification
 from ticket_app.models import Ticket, Message
 from ticket_app.models import TicketCategory
+
 from ticket_system.serializers import UserInfoSerializer
+from ticket_app.tasks import create_ticket_and_first_message, send_admin_answered_notification
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+
 
 class TicketSerializer(serializers.ModelSerializer):
     client = UserInfoSerializer(read_only=True)
@@ -11,11 +15,9 @@ class TicketSerializer(serializers.ModelSerializer):
     admin_status_display = serializers.CharField(source='get_admin_status_display', read_only=True)
     user_status_display = serializers.CharField(source='get_user_status_display', read_only=True)
     priority_display = serializers.CharField(source='get_priority_display', read_only=True)
-    category = serializers.SlugRelatedField(
-        slug_field='name',
-        queryset= TicketCategory.objects.all()
-    )
+    category = serializers.CharField(max_length=255)
     file = serializers.FileField(required=False)
+
 
     class Meta:
         model = Ticket
@@ -54,20 +56,16 @@ class TicketSerializer(serializers.ModelSerializer):
             file = validated_data.pop('file')
         except KeyError:
             file = None
+        if file:
+            temp_path = default_storage.save(f'temp/{file.name}', ContentFile(file.read()))
+        else:
+            temp_path = None
+        create_ticket_and_first_message.delay(file_path = temp_path, data =validated_data)
 
-        ticket = Ticket.objects.create(**validated_data)
-        description = validated_data.get('description', None)
-        message = Message.objects.create(ticket=ticket, body=description, file=file, sender = ticket.client)
-
-        return ticket
+        return validated_data
 
 class MessageListSerializer(serializers.ModelSerializer):
     sender = UserInfoSerializer(read_only=True)
-    is_sender = serializers.SerializerMethodField(read_only=True)
-
-    def get_is_sender(self, obj):
-        user = self.context.get('user')
-        return user == obj.sender
 
     class Meta:
         model = Message
@@ -77,7 +75,6 @@ class MessageListSerializer(serializers.ModelSerializer):
             'sender',
             'file',
             'created_at',
-            'is_sender'
         ]
 class MessageCreateSerializer(serializers.ModelSerializer):
 
@@ -108,6 +105,7 @@ class MessageCreateSerializer(serializers.ModelSerializer):
         if sender.is_superuser or sender.is_support:
             ticket.admin_status = Ticket.AdminStatus.ANSWERED
             ticket.user_status = Ticket.UserStatus.ANSWERED
+            send_admin_answered_notification.delay(ticket.client.id, ticket.title)
             ticket.save()
         else:
             ticket.admin_status = Ticket.AdminStatus.NEW
@@ -117,8 +115,24 @@ class MessageCreateSerializer(serializers.ModelSerializer):
         return message
     
 
-
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = TicketCategory
         fields = '__all__'
+class UserNotificationsSerializer(serializers.ModelSerializer):
+
+    title = serializers.CharField(source='notification.title', read_only=True)
+    category = serializers.CharField(source='notification.get_category_display', read_only=True)
+    message = serializers.CharField(source='notification.message', read_only=True)
+    class Meta:
+        model = UserNotification
+        fields = [
+            'id',
+            'title',
+            'category',
+            'message',
+            'is_read',
+            'created_at',
+
+        ]
+        ordering = ('created_at',)
