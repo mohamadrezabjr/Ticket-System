@@ -11,4 +11,5 @@ urlpatterns = [
     path('ticket-categories/<int:category_id>/',views.CategoryDetailAPIView.as_view(), name = 'category-detail'),
     path('notifications/', views.UserNotificationsListAPIView.as_view(), name = 'user-notifications'),
     path('notifications/<int:notification_id>/',views.UserNotificationDetailAPIView.as_view(), name = 'user-notification-detail'),
+    path('notifications/seen_all/', views.seen_all_notifications, name = 'seen-all-notifications'),
 ]

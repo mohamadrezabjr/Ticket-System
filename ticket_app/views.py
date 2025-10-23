@@ -1,5 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework import generics, viewsets, status, filters
 from rest_framework.exceptions import PermissionDenied, NotFound
 from rest_framework.generics import get_object_or_404
@@ -166,3 +166,11 @@ class UserNotificationDetailAPIView(generics.RetrieveAPIView):
 
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+
+@api_view(['GET'])
+def seen_all_notifications(request):
+    if request.user.is_authenticated:
+        notifications = UserNotification.objects.filter(user=request.user)
+        notifications.update(is_read=True)
+        return Response({'message': 'notifications seen successfully'})
+    return Response({'message': 'Please login to see notifications'})
