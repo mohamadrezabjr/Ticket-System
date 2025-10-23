@@ -106,7 +106,7 @@ Then visit:
 ---
 
 ## 📚 API Overview
->API overview is available in the [**API_OVERVIEW.md**](API_OVERVIEW.md) file.
+>API overview is available in the [**API_OVERVIEW.md**](Docs/API_OVERVIEW.md) file.
 
 ---
 
