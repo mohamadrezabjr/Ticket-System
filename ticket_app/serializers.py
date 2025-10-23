@@ -5,6 +5,10 @@ from .models import TicketCategory
 from ticket_app.models import Ticket, Message
 from ticket_app.models import TicketCategory
 from ticket_system.serializers import UserInfoSerializer
+from .tasks import create_ticket_and_first_message
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+
 
 class TicketSerializer(serializers.ModelSerializer):
     client = UserInfoSerializer(read_only=True)
@@ -12,11 +16,9 @@ class TicketSerializer(serializers.ModelSerializer):
     admin_status_display = serializers.CharField(source='get_admin_status_display', read_only=True)
     user_status_display = serializers.CharField(source='get_user_status_display', read_only=True)
     priority_display = serializers.CharField(source='get_priority_display', read_only=True)
-    category = serializers.SlugRelatedField(
-        slug_field='name',
-        queryset= TicketCategory.objects.all()
-    )
+    category = serializers.CharField(max_length=255)
     file = serializers.FileField(required=False)
+
 
     class Meta:
         model = Ticket
@@ -56,11 +58,11 @@ class TicketSerializer(serializers.ModelSerializer):
         except KeyError:
             file = None
 
-        ticket = Ticket.objects.create(**validated_data)
-        description = validated_data.get('description', None)
-        message = Message.objects.create(ticket=ticket, body=description, file=file, sender = ticket.client)
+        temp_path = default_storage.save(f'temp/{file.name}', ContentFile(file.read()))
+        print(file.name)
+        create_ticket_and_first_message.delay(file_path = temp_path, data =validated_data)
 
-        return ticket
+        return validated_data
 
 class MessageListSerializer(serializers.ModelSerializer):
     sender = UserInfoSerializer(read_only=True)

@@ -6,11 +6,10 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from admin_app.models import UserNotification
-from admin_app.serializers import NotificationSerializer
-from .models import TicketCategory
+from ticket_app.models import TicketCategory
 from auth_app.permissions import IsAdmin, IsSupportOrAdmin
 from ticket_app.permissions import IsTicketOwner
-from .serializers import CategorySerializer, UserNotificationsSerializer
+from ticket_app.serializers import CategorySerializer, UserNotificationsSerializer
 from .permissions import IsAdminOrReadOnly
 
 from ticket_app.models import Ticket, Message
@@ -66,7 +65,10 @@ class TicketViewSet(viewsets.ModelViewSet):
         return Response({'message' : f'Ticket #{instance.id} successfully closed.'}, status=status.HTTP_200_OK)
 
     def perform_create(self, serializer):
-        serializer.save(client=self.request.user)
+        category = TicketCategory.objects.filter(name = serializer.validated_data['category']).first()
+        if not category:
+            raise NotFound(f'Ticket category "{serializer.validated_data['category']}" not found.')
+        serializer.save(client_id=self.request.user.id, category=category.id)
 
 class MessagesListCreateView(generics.ListCreateAPIView):
 
