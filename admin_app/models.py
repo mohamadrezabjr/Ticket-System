@@ -3,14 +3,13 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-class NotificationCategeory(models.TextChoices):
-    NEW_MESSAGE = 'N', 'پیام جدید از پشتیبانی'
-    TICKET_CLOSE = 'C', 'بسته شدن تیکت'
-    SYSTEM = 'S', 'اعلان سیستمی'
-
 class Notification(models.Model):
+    class NotificationCategory(models.TextChoices):
+        NEW_MESSAGE = 'N', 'پیام جدید از پشتیبانی'
+        TICKET_CLOSE = 'C', 'بسته شدن تیکت'
+        SYSTEM = 'S', 'اعلان سیستمی'
     title = models.CharField(max_length = 255, null = True, blank = True)
-    category = models.CharField(max_length = 30, choices = NotificationCategeory.choices, default = NotificationCategeory.NEW_MESSAGE)
+    category = models.CharField(max_length = 30, choices = NotificationCategory.choices, default = NotificationCategory.NEW_MESSAGE)
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add = True)
     

@@ -1,11 +1,10 @@
-from django.template.context_processors import request
 from rest_framework import serializers, status
 from admin_app.models import UserNotification
-from .models import TicketCategory
 from ticket_app.models import Ticket, Message
 from ticket_app.models import TicketCategory
+
 from ticket_system.serializers import UserInfoSerializer
-from .tasks import create_ticket_and_first_message
+from ticket_app.tasks import create_ticket_and_first_message, send_admin_answered_notification
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 
@@ -105,6 +104,7 @@ class MessageCreateSerializer(serializers.ModelSerializer):
         if sender.is_superuser or sender.is_support:
             ticket.admin_status = Ticket.AdminStatus.ANSWERED
             ticket.user_status = Ticket.UserStatus.ANSWERED
+            send_admin_answered_notification.delay(ticket.client.id, ticket.title)
             ticket.save()
         else:
             ticket.admin_status = Ticket.AdminStatus.NEW

@@ -7,7 +7,7 @@ from django.core.files.base import ContentFile
 
 from ticket_app.serializers import MessageListSerializer
 from ticket_app.models import Ticket, Message
-
+from ticket_app.tasks import send_admin_answered_notification
 
 class TicketConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -74,6 +74,15 @@ class TicketConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def create_message(self, ticket, body, file):
         message = Message.objects.create(ticket = ticket, body = body, file = file, sender = self.user)
+        if self.user.is_superuser or self.user.is_support:
+            ticket.admin_status = Ticket.AdminStatus.ANSWERED
+            ticket.user_status = Ticket.UserStatus.ANSWERED
+            send_admin_answered_notification.delay(ticket.client.id, ticket.title)
+            ticket.save()
+        else:
+            ticket.admin_status = Ticket.AdminStatus.NEW
+            ticket.user_status = Ticket.UserStatus.PENDING
+            ticket.save()
         return MessageListSerializer(message).data
     @database_sync_to_async
     def has_permission(self, user, ticket):
