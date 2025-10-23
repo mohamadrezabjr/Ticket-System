@@ -126,6 +126,7 @@ class UserNotificationsSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserNotification
         fields = [
+            'id',
             'title',
             'category',
             'message',

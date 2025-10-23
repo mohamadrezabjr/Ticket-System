@@ -150,4 +150,19 @@ class UserNotificationsListAPIView(generics.ListAPIView):
         queryset = super().get_queryset()
         return queryset.filter(user=self.request.user)
 
-###TODO UserNotification Detail View
+class UserNotificationDetailAPIView(generics.RetrieveAPIView):
+    serializer_class = UserNotificationsSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = UserNotification.objects.select_related('user', 'notification').all()
+    lookup_field = 'id'
+    lookup_url_kwarg = 'notification_id'
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.user != self.request.user:
+            raise PermissionDenied('You are not allowed to see this Notification')
+        instance.is_read = True
+        instance.save()
+
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
