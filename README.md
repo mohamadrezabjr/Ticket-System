@@ -76,11 +76,21 @@ Edit `.env` and set your values:
 ```
 ENVIRONMENT=development
 SECRET_KEY=your-secret-here
+
 REDIS_HOST=redis
 REDIS_PORT=6379
+
 CELERY_BROKER_URL=redis://redis:6379/0
 CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+To use PostgreSQL, either switch the environment to production or set LOCAL_POSTGRES = True in ticket_system/settings.py.
+POSTGRES_DB=my_database
+POSTGRES_USER=myuser
+POSTGRES_PASSWORD=mypassword
+DATABASE_PORT=5432
+
 ```
+>To use PostgreSQL, either switch the environment to production or set LOCAL_POSTGRES = True in ticket_system/settings.py.
 
 > ⚠️ Do **not** commit your `.env` file to the repository. Keep it private.
 

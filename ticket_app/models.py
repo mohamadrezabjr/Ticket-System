@@ -50,7 +50,6 @@ class Ticket(models.Model):
     )
     priority = models.IntegerField(
         choices=PriorityChoices.choices,
-        max_length=10,
         default = PriorityChoices.MEDIUM,
     )
     client = models.ForeignKey(
