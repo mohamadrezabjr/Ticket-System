@@ -117,3 +117,11 @@ class NotificationSerializer(serializers.ModelSerializer):
         create_user_notifications.delay(user_ids, notification.id)
 
         return notification
+
+class UserResponseSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    phone = serializers.CharField(read_only=True)
+    role = serializers.CharField(read_only=True)
+    email = serializers.EmailField(read_only=True)
+    username = serializers.CharField(read_only=True)
+    image = serializers.ImageField(read_only=True)
