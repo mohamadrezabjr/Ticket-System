@@ -145,6 +145,13 @@ class CategoryDetailAPIView(generics.RetrieveUpdateAPIView):
     lookup_field = 'id'
     lookup_url_kwarg = 'category_id'
 
+class CategoryDeleteAPIView(generics.DestroyAPIView):
+    queryset = TicketCategory.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [IsAdmin]
+    lookup_field = 'id'
+    lookup_url_kwarg = 'category_id'
+
 class UserNotificationsListAPIView(generics.ListAPIView):
     serializer_class = UserNotificationsSerializer
     permission_classes = [IsAuthenticated]
