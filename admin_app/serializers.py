@@ -10,6 +10,9 @@ class UserSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(write_only=True, required=False, allow_null=True)
     password = serializers.CharField(write_only=True, required=False)
 
+    def validate_email(self, value):
+        if Profile.objects.filter(email=value).exists():
+            raise serializers.ValidationError("This email is already in use.")
     class Meta:
         model = User
         fields = ['id', 'phone', 'password', 'role', 'email', 'username', 'image']
@@ -20,6 +23,8 @@ class UserSerializer(serializers.ModelSerializer):
             return "support"
         elif getattr(obj, 'is_user', False):
             return "user"
+        elif getattr(obj, 'is_superuser', False):
+            return "Admin"
         return None
 
     def create(self, validated_data):
@@ -28,12 +33,13 @@ class UserSerializer(serializers.ModelSerializer):
         email = validated_data.pop('email', None)
         username = validated_data.pop('username', None)
         image = validated_data.pop('image', None)
-
+        if not role:
+            raise serializers.ValidationError("Role required")
         user = User.objects.create(**validated_data)
 
         if role == 'support':
             user.is_support = True
-            user.is_user = False
+            user.is_user = True
         elif role == 'user':
             user.is_user = True
             user.is_support = False
@@ -59,7 +65,9 @@ class UserSerializer(serializers.ModelSerializer):
     
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        if instance.is_support:
+        if instance.is_superuser:
+            data['role'] = 'Admin'
+        elif instance.is_support:
             data['role'] = "support"
         elif instance.is_user:
             data['role'] = "user"
@@ -73,13 +81,15 @@ class UserSerializer(serializers.ModelSerializer):
     
     def update(self, instance, validated_data):
         role = validated_data.get('role', 'None')
-        if role == 'support':
-            instance.is_support = True
-            instance.is_user = False
-        elif role == 'user':
-            instance.is_user = True
-            instance.is_support = False
-        
+        if role:
+            if not instance.is_superuser:
+                if role == 'support':
+                    instance.is_support = True
+                elif role == 'user':
+                    instance.is_user = True
+                    instance.is_support = False
+            else :
+                raise serializers.ValidationError({'message' : 'You cannot change Admin role'})
         phone = validated_data.get('phone', None)
         if phone:
             instance.phone = phone
