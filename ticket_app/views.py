@@ -1,4 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema
 from rest_framework.decorators import action, api_view
 from rest_framework import generics, viewsets, status, filters
 from rest_framework.exceptions import PermissionDenied, NotFound
@@ -10,7 +11,7 @@ from admin_app.models import UserNotification
 from auth_app.permissions import IsAdmin, IsSupportOrAdmin
 
 from ticket_app.permissions import IsTicketOwner, IsAdminOrReadOnly
-from ticket_app.serializers import CategorySerializer, UserNotificationsSerializer
+from ticket_app.serializers import CategorySerializer, UserNotificationsSerializer, TicketInfoMessagesListSerializer
 from ticket_app.models import Ticket, Message, TicketCategory
 from ticket_app.serializers import TicketSerializer, MessageListSerializer, MessageCreateSerializer
 
@@ -57,7 +58,12 @@ class TicketViewSet(viewsets.ModelViewSet):
             Ticket.objects.filter(id = instance.id).update(admin_status =Ticket.AdminStatus.SEEN)
         return Response(serializer.data)
 
-    @action(detail = True, methods=['post', 'get'], permission_classes=[IsTicketOwner, IsSupportOrAdmin])
+    @extend_schema(
+        request={},
+        responses={200:{'message' : 'Ticket #id closed successfully'}},
+
+    )
+    @action(detail = True, methods=['patch'], permission_classes=[IsTicketOwner, IsSupportOrAdmin])
     def close(self, request, pk=None):
         instance = self.get_object()
         instance.is_closed = True
@@ -69,16 +75,15 @@ class TicketViewSet(viewsets.ModelViewSet):
         if not category:
             raise NotFound(f'Ticket category "{serializer.validated_data['category']}" not found.')
         serializer.save(client_id=self.request.user.id, category=category.id)
-
 class MessagesListCreateView(generics.ListCreateAPIView):
 
     queryset = Message.objects.select_related('ticket__category', 'sender__profile_user', 'ticket__client').all()
     permission_classes = [IsAuthenticated,]
-
+    pagination_class = None
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return MessageCreateSerializer
-        return MessageListSerializer
+        return TicketInfoMessagesListSerializer
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -102,18 +107,17 @@ class MessagesListCreateView(generics.ListCreateAPIView):
         raise PermissionDenied('You are not allowed to see this ticket')
 
     def list(self, request, *args, **kwargs):
-        messages = self.get_queryset()
-        serializer = self.get_serializer(messages, many=True)
         if self.ticket :
-            ticket_data = TicketInfoSerializer(self.ticket).data
+            messages = self.get_queryset()
+            serializer = self.get_serializer(
+                {
+                    'messages': messages,
+                    'ticket_info': self.ticket
+                }
+            )
         else :
             return Response({'message' : 'Ticket not found'}, status=status.HTTP_404_NOT_FOUND)
-        return Response(
-            {
-                "ticket_info":ticket_data,
-                "messages": serializer.data,
-            }
-        )
+        return Response(serializer.data)
 
     def perform_create(self, serializer):
         user = self.request.user
