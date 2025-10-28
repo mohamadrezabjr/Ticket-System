@@ -3,16 +3,16 @@ from urllib.parse import parse_qs
 import jwt
 from channels.middleware import BaseMiddleware
 from channels.db import database_sync_to_async
-from django.conf import settings
-from django.contrib.auth.models import AnonymousUser
-from rest_framework_simplejwt.tokens import UntypedToken
-from rest_framework_simplejwt.exceptions import InvalidToken, TokenError, ExpiredTokenError
-from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
-from auth_app.models import User
+
 
 
 @database_sync_to_async
 def get_user(token):
+    from auth_app.models import User
+    from django.conf import settings
+    from rest_framework_simplejwt.tokens import UntypedToken
+    from rest_framework_simplejwt.exceptions import InvalidToken, TokenError, ExpiredTokenError
+    from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
     try :
         UntypedToken(token)
         decoded_token = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
@@ -25,6 +25,7 @@ def get_user(token):
 class JWTAuthMiddleware(BaseMiddleware):
 
     async def __call__(self, scope, receive, send):
+        from django.contrib.auth.models import AnonymousUser
         query_string = parse_qs(scope["query_string"].decode())
         token = query_string.get("token")[0]
 

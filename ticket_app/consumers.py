@@ -5,10 +5,6 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.core.files.base import ContentFile
 
-from ticket_app.serializers import MessageListSerializer
-from ticket_app.models import Ticket, Message
-from ticket_app.tasks import send_admin_answered_notification
-
 class TicketConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.ticket_id = self.scope['url_route']['kwargs']['ticket_id']
@@ -73,6 +69,9 @@ class TicketConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def create_message(self, ticket, body, file):
+        from ticket_app.models import Ticket, Message
+        from ticket_app.tasks import send_admin_answered_notification
+        from ticket_app.serializers import MessageListSerializer
         message = Message.objects.create(ticket = ticket, body = body, file = file, sender = self.user)
         if self.user.is_superuser or self.user.is_support:
             ticket.admin_status = Ticket.AdminStatus.ANSWERED
@@ -91,4 +90,5 @@ class TicketConsumer(AsyncWebsocketConsumer):
         return False
     @database_sync_to_async
     def get_ticket(self, id):
+        from ticket_app.models import Ticket
         return Ticket.objects.filter(id=id).first()
