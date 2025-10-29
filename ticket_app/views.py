@@ -107,6 +107,13 @@ class MessagesListCreateView(generics.ListCreateAPIView):
         raise PermissionDenied('You are not allowed to see this ticket')
 
     def list(self, request, *args, **kwargs):
+        ticket_id = self.kwargs['ticket_id']
+        try:
+            self.ticket =Ticket.objects.select_related('category', 'client').get(id = ticket_id)
+        except Ticket.DoesNotExist:
+            self.ticket = None
+            return Response({'message' : 'Ticket not found'}, status=status.HTTP_404_NOT_FOUND)
+
         if self.ticket :
             messages = self.get_queryset()
             serializer = self.get_serializer(
