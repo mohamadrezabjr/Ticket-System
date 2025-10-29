@@ -30,6 +30,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    #Cloudinary
+    'cloudinary',
+    'cloudinary_storage',
+
     # project apps
     'auth_app',
     'ticket_app',
@@ -47,6 +51,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -82,7 +87,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-LOCAL_POSTGRES = True
+LOCAL_POSTGRES = False
 if ENVIRONMENT =='production' or  LOCAL_POSTGRES:
     DATABASES['default'] = dj_database_url.parse(os.getenv('DATABASE_URL'))
 
@@ -97,7 +102,10 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
-STATIC_URL = 'static/'
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Django REST Framework
@@ -147,4 +155,14 @@ CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 
 #Media
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+if ENVIRONMENT == 'production' or LOCAL_POSTGRES:
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+else:
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': str(os.getenv('CLOUD_NAME')),
+    'API_KEY': str(os.getenv('CLOUD_API_KEY')),
+    'API_SECRET': str(os.getenv('CLOUD_API_SECRET'))
+}
