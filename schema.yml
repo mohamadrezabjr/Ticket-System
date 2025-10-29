@@ -1,0 +1,1605 @@
+openapi: 3.0.3
+info:
+  title: Ticket System
+  version: 1.0.0
+  description: http://127.0.0.1:8000/admin/
+paths:
+  /admin/notifications/:
+    get:
+      operationId: admin_notifications_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNotificationList'
+          description: ''
+    post:
+      operationId: admin_notifications_create
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Notification'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Notification'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Notification'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+  /admin/notifications/{id}/:
+    get:
+      operationId: admin_notifications_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this notification.
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+    put:
+      operationId: admin_notifications_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this notification.
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Notification'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Notification'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Notification'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+    patch:
+      operationId: admin_notifications_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this notification.
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedNotification'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedNotification'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedNotification'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+    delete:
+      operationId: admin_notifications_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this notification.
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /admin/users/:
+    get:
+      operationId: admin_users_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserList'
+          description: ''
+    post:
+      operationId: admin_users_create
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /admin/users/{id}/:
+    get:
+      operationId: admin_users_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: admin_users_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: admin_users_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    delete:
+      operationId: admin_users_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /auth/login/:
+    post:
+      operationId: auth_login_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MyTokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MyTokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MyTokenObtainPair'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyTokenObtainPair'
+          description: ''
+  /auth/logout/:
+    post:
+      operationId: auth_logout_create
+      description: User Logout
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogout'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserLogout'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserLogout'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLogout'
+          description: ''
+  /auth/profile/{user_id}/:
+    get:
+      operationId: auth_profile_retrieve
+      description: User Profile
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+  /auth/profile/update/{user_id}/:
+    patch:
+      operationId: auth_profile_update_partial_update
+      description: Updating profile
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateProfile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateProfile'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateProfile'
+          description: ''
+  /auth/register/:
+    post:
+      operationId: auth_register_create
+      description: User Registration
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRegister'
+          description: ''
+  /auth/token/refresh/:
+    post:
+      operationId: auth_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /notifications/:
+    get:
+      operationId: notifications_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - notifications
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserNotificationsList'
+          description: ''
+  /notifications/{notification_id}/:
+    get:
+      operationId: notifications_retrieve
+      parameters:
+      - in: path
+        name: notification_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - notifications
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserNotifications'
+          description: ''
+  /notifications/seen_all/:
+    get:
+      operationId: notifications_seen_all_retrieve
+      tags:
+      - notifications
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /ticket-categories/:
+    get:
+      operationId: ticket_categories_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - ticket-categories
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCategoryList'
+          description: ''
+    post:
+      operationId: ticket_categories_create
+      tags:
+      - ticket-categories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Category'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Category'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+  /ticket-categories/{category_id}/:
+    get:
+      operationId: ticket_categories_retrieve
+      parameters:
+      - in: path
+        name: category_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - ticket-categories
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+    put:
+      operationId: ticket_categories_update
+      parameters:
+      - in: path
+        name: category_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - ticket-categories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Category'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Category'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+    patch:
+      operationId: ticket_categories_partial_update
+      parameters:
+      - in: path
+        name: category_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - ticket-categories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCategory'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCategory'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCategory'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+  /tickets/:
+    get:
+      operationId: tickets_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: priority
+        schema:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+        description: |-
+          * `1` - کم-جزئی
+          * `2` - متوسط-پیش‌فرض
+          * `3` - بالا-فوری
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: user_status
+        schema:
+          type: string
+          enum:
+          - A
+          - C
+          - P
+        description: |-
+          * `P` - در انتظار پاسخ
+          * `A` - پاسخ داده شده
+          * `C` - بسته شده
+      tags:
+      - tickets
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTicketList'
+          description: ''
+    post:
+      operationId: tickets_create
+      tags:
+      - tickets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+          description: ''
+  /tickets/{id}/:
+    get:
+      operationId: tickets_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this ticket.
+        required: true
+      tags:
+      - tickets
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+          description: ''
+    put:
+      operationId: tickets_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this ticket.
+        required: true
+      tags:
+      - tickets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+          description: ''
+    patch:
+      operationId: tickets_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this ticket.
+        required: true
+      tags:
+      - tickets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTicket'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTicket'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTicket'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+          description: ''
+    delete:
+      operationId: tickets_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this ticket.
+        required: true
+      tags:
+      - tickets
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /tickets/{id}/close/:
+    patch:
+      operationId: tickets_close_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this ticket.
+        required: true
+      tags:
+      - tickets
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                message: 'Ticket #id closed successfully'
+          description: ''
+  /tickets/{ticket_id}/messages/:
+    get:
+      operationId: tickets_messages_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: path
+        name: ticket_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tickets
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMessageListList'
+          description: ''
+    post:
+      operationId: tickets_messages_create
+      parameters:
+      - in: path
+        name: ticket_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tickets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MessageCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MessageCreate'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageCreate'
+          description: ''
+components:
+  schemas:
+    AdminStatusEnum:
+      enum:
+      - N
+      - A
+      - S
+      - C
+      type: string
+      description: |-
+        * `N` - جدید
+        * `A` - پاسخ داده شده
+        * `S` - دیده شده
+        * `C` - بسته شده
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          nullable: true
+      required:
+      - id
+      - name
+    CategoryEnum:
+      enum:
+      - N
+      - C
+      - S
+      type: string
+      description: |-
+        * `N` - پیام جدید از پشتیبانی
+        * `C` - بسته شدن تیکت
+        * `S` - اعلان سیستمی
+    MessageCreate:
+      type: object
+      properties:
+        pk:
+          type: integer
+          readOnly: true
+          title: ID
+        ticket:
+          type: integer
+          readOnly: true
+        body:
+          type: string
+          nullable: true
+        sender:
+          type: integer
+          readOnly: true
+          nullable: true
+        file:
+          type: string
+          format: uri
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - pk
+      - sender
+      - ticket
+    MessageList:
+      type: object
+      properties:
+        pk:
+          type: integer
+          readOnly: true
+          title: ID
+        body:
+          type: string
+          nullable: true
+        sender:
+          allOf:
+          - $ref: '#/components/schemas/UserInfo'
+          readOnly: true
+        file:
+          type: string
+          format: uri
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - pk
+      - sender
+    MyTokenObtainPair:
+      type: object
+      properties:
+        phone:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - password
+      - phone
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          nullable: true
+          maxLength: 255
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        category_display:
+          type: string
+        message:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        user_ids:
+          type: array
+          items: {}
+          writeOnly: true
+      required:
+      - created_at
+      - id
+      - message
+      - user_ids
+    PaginatedCategoryList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+    PaginatedMessageListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageList'
+    PaginatedNotificationList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+    PaginatedTicketList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ticket'
+    PaginatedUserList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    PaginatedUserNotificationsList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserNotifications'
+    PatchedCategory:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          nullable: true
+    PatchedNotification:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          nullable: true
+          maxLength: 255
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        category_display:
+          type: string
+        message:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        user_ids:
+          type: array
+          items: {}
+          writeOnly: true
+    PatchedTicket:
+      type: object
+      properties:
+        pk:
+          type: integer
+          readOnly: true
+          title: ID
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          nullable: true
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/PriorityEnum'
+          minimum: -2147483648
+          maximum: 2147483647
+        category:
+          type: string
+          maxLength: 255
+        client:
+          allOf:
+          - $ref: '#/components/schemas/UserInfo'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        priority_display:
+          type: string
+          readOnly: true
+        admin_status_display:
+          type: string
+          readOnly: true
+        user_status_display:
+          type: string
+          readOnly: true
+        user_status:
+          allOf:
+          - $ref: '#/components/schemas/UserStatusEnum'
+          readOnly: true
+        admin_status:
+          allOf:
+          - $ref: '#/components/schemas/AdminStatusEnum'
+          readOnly: true
+        is_closed:
+          type: boolean
+          readOnly: true
+        file:
+          type: string
+          format: uri
+    PatchedUpdateProfile:
+      type: object
+      properties:
+        username:
+          type: string
+          nullable: true
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 100
+        image:
+          type: string
+          format: uri
+          nullable: true
+        city:
+          type: string
+        province:
+          type: string
+        phone:
+          type: string
+          writeOnly: true
+    PatchedUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        phone:
+          type: string
+          maxLength: 11
+        password:
+          type: string
+          writeOnly: true
+        role:
+          type: string
+        email:
+          type: string
+          writeOnly: true
+        username:
+          type: string
+          writeOnly: true
+        image:
+          type: string
+          format: uri
+          writeOnly: true
+          nullable: true
+    PriorityEnum:
+      enum:
+      - 1
+      - 2
+      - 3
+      type: integer
+      description: |-
+        * `1` - کم-جزئی
+        * `2` - متوسط-پیش‌فرض
+        * `3` - بالا-فوری
+    Ticket:
+      type: object
+      properties:
+        pk:
+          type: integer
+          readOnly: true
+          title: ID
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          nullable: true
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/PriorityEnum'
+          minimum: -2147483648
+          maximum: 2147483647
+        category:
+          type: string
+          maxLength: 255
+        client:
+          allOf:
+          - $ref: '#/components/schemas/UserInfo'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        priority_display:
+          type: string
+          readOnly: true
+        admin_status_display:
+          type: string
+          readOnly: true
+        user_status_display:
+          type: string
+          readOnly: true
+        user_status:
+          allOf:
+          - $ref: '#/components/schemas/UserStatusEnum'
+          readOnly: true
+        admin_status:
+          allOf:
+          - $ref: '#/components/schemas/AdminStatusEnum'
+          readOnly: true
+        is_closed:
+          type: boolean
+          readOnly: true
+        file:
+          type: string
+          format: uri
+      required:
+      - admin_status
+      - admin_status_display
+      - category
+      - client
+      - created_at
+      - is_closed
+      - pk
+      - priority_display
+      - title
+      - updated_at
+      - user_status
+      - user_status_display
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
+    UpdateProfile:
+      type: object
+      properties:
+        username:
+          type: string
+          nullable: true
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 100
+        image:
+          type: string
+          format: uri
+          nullable: true
+        city:
+          type: string
+        province:
+          type: string
+        phone:
+          type: string
+          writeOnly: true
+      required:
+      - city
+      - phone
+      - province
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        phone:
+          type: string
+          maxLength: 11
+        password:
+          type: string
+          writeOnly: true
+        role:
+          type: string
+        email:
+          type: string
+          writeOnly: true
+        username:
+          type: string
+          writeOnly: true
+        image:
+          type: string
+          format: uri
+          writeOnly: true
+          nullable: true
+      required:
+      - id
+      - phone
+    UserInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          maxLength: 100
+        phone:
+          type: string
+          maxLength: 100
+        profile_image:
+          type: string
+          format: uri
+          readOnly: true
+      required:
+      - id
+      - phone
+      - profile_image
+      - username
+    UserLogout:
+      type: object
+      properties:
+        refresh:
+          type: string
+      required:
+      - refresh
+    UserNotifications:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        category:
+          type: string
+          readOnly: true
+        message:
+          type: string
+          readOnly: true
+        is_read:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - category
+      - created_at
+      - id
+      - message
+      - title
+    UserProfile:
+      type: object
+      properties:
+        user:
+          type: string
+          readOnly: true
+        username:
+          type: string
+          nullable: true
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 100
+        city:
+          type: string
+          readOnly: true
+        province:
+          type: string
+          readOnly: true
+        image:
+          type: string
+          format: uri
+          nullable: true
+      required:
+      - city
+      - province
+      - user
+    UserRegister:
+      type: object
+      properties:
+        phone:
+          type: string
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - password
+      - phone
+    UserStatusEnum:
+      enum:
+      - P
+      - A
+      - C
+      type: string
+      description: |-
+        * `P` - در انتظار پاسخ
+        * `A` - پاسخ داده شده
+        * `C` - بسته شده
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
