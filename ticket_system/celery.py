@@ -6,6 +6,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ticket_system.settings')
 
 app = Celery('ticket_system', broker=os.environ.get('REDIS_URL'))
 
+app.conf.worker_concurrency = 1
 
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
