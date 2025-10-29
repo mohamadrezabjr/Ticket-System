@@ -1,5 +1,7 @@
 from pathlib import Path
 from datetime import timedelta
+
+import dj_database_url
 from dotenv import load_dotenv
 import os
 
@@ -80,17 +82,9 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-LOCAL_POSTGRES = False
+LOCAL_POSTGRES = True
 if ENVIRONMENT =='production' or  LOCAL_POSTGRES:
-    DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': str(os.getenv('POSTGRES_DB', 'mydatabase')),
-        'USER': str(os.getenv('POSTGRES_USER')),
-        'PASSWORD': str(os.getenv('POSTGRES_PASSWORD')),
-        'HOST': str(os.getenv('DATABASE_HOST' ,'localhost')),
-        'PORT': str(os.getenv('DATABASE_PORT' ,'5432'))
-    }
-
+    DATABASES['default'] = dj_database_url.parse(os.getenv('DATABASE_URL'))
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
@@ -132,11 +126,12 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(os.getenv('REDIS_HOST', '127.0.0.1'), os.getenv("REDIS_PORT", 6379))],
+            "hosts": [os.getenv("REDIS_URL", "redis://127.0.0.1:6379")],
         },
     },
 }
