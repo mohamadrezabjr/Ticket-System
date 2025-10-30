@@ -17,7 +17,7 @@ ws://<your-server>/ws/ticket/<ticket_id>/?token=<JWT_TOKEN>
 ```javascript
 const ticketId = 1;
 const token = "<YOUR_JWT_TOKEN>";
-const socket = new WebSocket(`ws://127.0.0.1:8000/ws/ticket/${ticketId}/?token=${token}`);
+const socket = new WebSocket(`ws://<your-server>/ws/ticket/${ticketId}/?token=${token}`);
 
 socket.onopen = () => {
     console.log("Connected to ticket channel!");
@@ -39,45 +39,11 @@ socket.onclose = () => {
 
 ## 💬 Sending Messages
 
-### Text Message Only
-
 **Request (JSON)**
 
 ```json
 {
     "body": "Hello, this is a test message",
-    "file": "",
-    "filename": ""
-}
-```
-
-**Response (broadcast to all clients in the ticket group)**
-
-```json
-{
-
-    "pk": 116,
-    "body": "hello",
-    "sender": {
-        "id": 3,
-        "username": "user3",
-        "phone": "09123456789",
-        "profile_image": "http://localhost:8000/media/profiles/profile.png"
-    },
-    "file": null,
-    "created_at": "2025-10-22T14:16:59.038026Z"
-}
-```
-
----
-
-### 📂 File Message Only
-
-**Request (JSON)**
-
-```json
-{
-    "body": "",
     "file": "iVBORw0KGgoAAAANSUhEUgAA...",  // Base64 encoded file
     "filename": "example.png"
 }
@@ -89,19 +55,21 @@ socket.onclose = () => {
 {
 
     "pk": 116,
-    "body": null,
+    "body": "Hello, this is a test message",
     "sender": {
         "id": 3,
         "username": "user3",
         "phone": "09123456789",
-        "profile_image": "http://localhost:8000/media/profiles/profile.png"
+        "profile_image": "http://<your-server>/media/profiles/profile.png"
     },
-    "file": "http://localhost:8000/media/files/ticket_1/example.png",
+    "file": "http://<your-server>/media/files/ticket_1/example.png",
     "created_at": "2025-10-22T17:32:10Z"
 }
 ```
 
 ---
+
+
 
 ### Rules
 
